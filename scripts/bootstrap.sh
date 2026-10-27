@@ -24,7 +24,7 @@ if true; then
     export VERSION_FLAG=http://localhost:5000/releases/latest
     export INSTALLER_BASE=http://localhost:5000/releases
     export INSTALLER_DATA=http://localhost:5000/data/installer_data.json
-    export REPO_BASE=http://localhost:5000/os
+    export REPO_BASE=http://localhost:5000
 
     export EXPERT=1
 
