@@ -22,6 +22,7 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
           submodules: recursive
+          token: ${{ secrets.SUBMODULE_TOKEN }}
 
       - name: Install build dependencies
         run: |
