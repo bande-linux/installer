@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, unbound]
     outputs:
       installer_ver: ${{ steps.compile.outputs.installer_ver }}
 
@@ -26,7 +26,6 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --no-install-recommends -y gcc-aarch64-linux-gnu
           sudo apt-get install --no-install-recommends -y libarchive-tools 7zip jq
           rustup target install aarch64-unknown-none-softfloat
 
