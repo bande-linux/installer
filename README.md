@@ -28,6 +28,15 @@ downloads and unpacks the installer tree. The variables at its top configure it:
 * `REPO_BASE`: a URI pointing to the OS images root, the parent folder of the
   relative paths in the metadata file
 
+## First-boot setup
+An OS entry in the metadata file with `"setup": true` makes the installer ask for
+a username and password, a Wi-Fi network and an SSH public key. They are written
+as plain files into `unbound/setup/` on the OS's EFI system partition (`user`,
+`password`, `wifi-ssid`, `wifi-psk`, `authorized_keys`), next to the installer
+data, so the partition needs `"copy_installer_data": true`. The installed OS
+applies them on its first boot and deletes them. Until then they are readable by
+anyone who can mount that partition.
+
 ## License
 The Unbound Linux installer is distributed under the MIT license. See LICENSE for the
 license text.

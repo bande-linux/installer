@@ -16,6 +16,7 @@ class OSInstaller(PackageInstaller):
         self.ucache = None
         self.efi_part = None
         self.idata_targets = []
+        self.setup = None
         self.install_size = self.min_size
 
     @property
@@ -127,6 +128,13 @@ class OSInstaller(PackageInstaller):
                 fd.write(data)
             ucache.flush_progress()
 
+    def write_setup(self, path):
+        os.makedirs(path, exist_ok=True)
+        for name, value in self.setup.items():
+            if value:
+                with open(os.path.join(path, name), "w", encoding="utf-8") as fd:
+                    fd.write(value)
+
     def install(self, stub_ins):
         p_progress("Installing OS...")
         logging.info("OSInstaller.install()")
@@ -171,6 +179,8 @@ class OSInstaller(PackageInstaller):
                 data_path = os.path.join(mountpoint, "unbound")
                 os.makedirs(data_path, exist_ok=True)
                 self.idata_targets.append(data_path)
+                if self.setup:
+                    self.write_setup(os.path.join(data_path, "setup"))
 
         if "extras" in self.template:
             assert self.efi_part is not None

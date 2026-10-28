@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: MIT
-import os, os.path, shlex, subprocess, sys, time, termios, json, getpass
+import os, os.path, re, shlex, subprocess, sys, time, termios, json, getpass
 from dataclasses import dataclass
 
 import system, osenum, stub, diskutil, osinstall, unbound_firmware, unboot, bugs
@@ -400,11 +400,76 @@ class InstallerMain:
         logging.info(f"New OS name: {label}")
         print()
 
+        if template.get("setup", False):
+            self.osins.setup = self.get_setup()
+
         ipsw = self.choose_ipsw(template.get("supported_fw", None))
         logging.info(f"Chosen IPSW version: {ipsw.version}")
         self.ins = stub.StubInstaller(self.sysinfo, self.dutil, self.osinfo)
         self.ins.load_ipsw(ipsw)
         return os_size
+
+    def get_setup(self):
+        login = os.environ.get("SUDO_USER") or getpass.getuser()
+        default_user = login if re.fullmatch(r"[a-z_][a-z0-9_-]{0,31}", login) else None
+
+        p_question("Create the user account for the new OS")
+        while True:
+            self.flush_input()
+            user = input_prompt(f"Username ({default_user}): " if default_user else "Username: ").strip()
+            user = user or default_user
+            if user and re.fullmatch(r"[a-z_][a-z0-9_-]{0,31}", user):
+                break
+            p_error("Use lowercase letters, digits, '-' and '_'.")
+        while True:
+            self.flush_input()
+            password = getpass.getpass("Password: ")
+            if not password:
+                continue
+            if getpass.getpass("Repeat password: ") == password:
+                break
+            p_error("The passwords do not match.")
+        print()
+
+        p_question("Enter the Wi-Fi network for the new OS")
+        self.flush_input()
+        ssid = input_prompt("Network name (none): ")
+        psk = ""
+        while ssid:
+            self.flush_input()
+            psk = getpass.getpass("Wi-Fi password (none): ")
+            if not psk or 8 <= len(psk) <= 63 or re.fullmatch(r"[0-9a-fA-F]{64}", psk):
+                break
+            p_error("A Wi-Fi password has 8 to 63 characters.")
+        print()
+
+        p_question("Enter an SSH public key or the path to one")
+        default_key = os.path.expanduser(f"~{login}/.ssh/id_ed25519.pub")
+        if not os.path.exists(default_key):
+            default_key = None
+        while True:
+            self.flush_input()
+            key = input_prompt(f"SSH key ({default_key or 'none'}): ").strip() or default_key
+            if key and not re.match(r"(ssh-|ecdsa-|sk-)", key):
+                try:
+                    with open(os.path.expanduser(key)) as fd:
+                        key = fd.read().strip()
+                except OSError:
+                    p_error("Cannot read that file.")
+                    continue
+            if not key or re.fullmatch(r"(ssh-|ecdsa-|sk-)\S+ \S+( .*)?", key):
+                break
+            p_error("Not an SSH public key.")
+        print()
+
+        logging.info(f"Setup: user {user}, Wi-Fi {ssid!r}, SSH key {'set' if key else 'none'}")
+        return {
+            "user": user,
+            "password": password,
+            "wifi-ssid": ssid,
+            "wifi-psk": psk,
+            "authorized_keys": key + "\n" if key else "",
+        }
 
     def action_repair_or_upgrade(self, oses, upgrade):
         choices = {str(i): f"{p.desc}\n      {str(o)}" for i, (p, o) in enumerate(oses)}
