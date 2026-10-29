@@ -74,7 +74,8 @@ you added that fails §3. Expect that to be most of them.
   - add a dependency (Python package, bundled tool)
   - run anything as root, or anything that touches disks, partitions or the boot policy of a real
     Mac, including `test.sh`
-- I commit. Never run git commit, push or stash.
+- Commit in small commits of one intent on a branch and push it. A branch reaches main only with
+  green CI, never by a force-push.
 
 ## 6. Architecture
 
