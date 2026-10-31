@@ -7,12 +7,12 @@ on:
   workflow_call:
     outputs:
       installer_ver:
-        description: unbound-installer built version string
+        description: bande-installer built version string
         value: ${{ jobs.build.outputs.installer_ver }}
 
 jobs:
   build:
-    runs-on: [self-hosted, unbound]
+    runs-on: [self-hosted, bande]
     outputs:
       installer_ver: ${{ steps.compile.outputs.installer_ver }}
 
@@ -30,7 +30,7 @@ jobs:
           sudo apt-get install --no-install-recommends -y libarchive-tools 7zip jq python3-certifi
           rustup target install aarch64-unknown-none-softfloat
 
-      - name: Build unbound-installer
+      - name: Build bande-installer
         id: compile
         run: |
           ./build.sh

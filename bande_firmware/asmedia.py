@@ -2,7 +2,7 @@
 import logging, struct
 from .core import FWFile
 
-log = logging.getLogger("unbound_firmware.asmedia")
+log = logging.getLogger("bande_firmware.asmedia")
 
 MAGIC = b"2214A_RCFG"
 

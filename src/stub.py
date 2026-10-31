@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: MIT
 import os, os.path, plistlib, shutil, sys, stat, subprocess, urlcache, zipfile, logging, json, tempfile
 import osenum
-from unbound_firmware.wifi import WiFiFWCollection
-from unbound_firmware.bluetooth import BluetoothFWCollection
-from unbound_firmware.multitouch import MultitouchFWCollection
-from unbound_firmware.kernel import KernelFWCollection
-from unbound_firmware.isp import ISPFWCollection
-from unbound_firmware.als import AlsFWCollection, FACTORY_DIR
+from bande_firmware.wifi import WiFiFWCollection
+from bande_firmware.bluetooth import BluetoothFWCollection
+from bande_firmware.multitouch import MultitouchFWCollection
+from bande_firmware.kernel import KernelFWCollection
+from bande_firmware.isp import ISPFWCollection
+from bande_firmware.als import AlsFWCollection, FACTORY_DIR
 from util import *
 
 class StubInstaller(PackageInstaller):
@@ -203,12 +203,12 @@ class StubInstaller(PackageInstaller):
             else:
                 logging.info("EFI partition found")
                 mountpoint = self.dutil.mount(efi_part.name)
-                unbound_dir = os.path.join(mountpoint, "unbound")
-                if os.path.exists(unbound_dir):
-                    self.collect_installer_data(unbound_dir, merge_stub_info=True)
+                bande_dir = os.path.join(mountpoint, "bande")
+                if os.path.exists(bande_dir):
+                    self.collect_installer_data(bande_dir, merge_stub_info=True)
                     logging.info("Admin users updated in ESP")
                 else:
-                    logging.info("'unbound' dir not found in ESP")
+                    logging.info("'bande' dir not found in ESP")
 
     def load_identity(self):
         self.get_paths()

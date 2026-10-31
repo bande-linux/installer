@@ -3,7 +3,7 @@
 import os, os.path, re, shlex, subprocess, sys, time, termios, json, getpass
 from dataclasses import dataclass
 
-import system, osenum, stub, diskutil, osinstall, unbound_firmware, unboot, bugs
+import system, osenum, stub, diskutil, osinstall, bande_firmware, unboot, bugs
 from util import *
 
 PART_ALIGN = psize("1MiB")
@@ -88,7 +88,7 @@ DEVICES = {
     "j516map":  Device("14.8.3", False), # MacBook Pro (16-inch, M3 Max, 2023)
 }
 
-# Unbound Linux does not support running in a virtual machine, this option
+# Bande Linux does not support running in a virtual machine, this option
 # exists only for development of the installer itself.
 if os.environ.get("ALLOW_VM", None):
     CHIP_MIN_VER[0xfe00] = "12.0"
@@ -581,7 +581,7 @@ class InstallerMain:
         esp_id = None
         for var in vars:
             k, v = var.split('=')
-            if k == "chosen.unbound,efi-system-partition":
+            if k == "chosen.bande,efi-system-partition":
                 esp_id = v
                 break
         if esp_id is None:
@@ -593,7 +593,7 @@ class InstallerMain:
         mountpoint = self.dutil.mount(target.name)
 
         os.makedirs("vendorfw", exist_ok=True)
-        fw_pkg = unbound_firmware.core.FWPackage("vendorfw")
+        fw_pkg = bande_firmware.core.FWPackage("vendorfw")
         ipsw = None
         for ver in IPSW_VERSIONS:
             if ver.version == osi.version:
@@ -613,9 +613,9 @@ class InstallerMain:
         base = os.path.join(mountpoint, "vendorfw")
         logging.info(f"Firmware -> {base}")
         shutil.copytree(fw_pkg.path, base, dirs_exist_ok=True)
-        unbound_dir = os.path.join(mountpoint, "unbound")
+        bande_dir = os.path.join(mountpoint, "bande")
         all_fw = "all_firmware.tar.gz"
-        shutil.copy(all_fw, os.path.join(unbound_dir, all_fw))
+        shutil.copy(all_fw, os.path.join(bande_dir, all_fw))
 
         print()
         p_success(f"Firmware rebuild complete. Press enter to continue.")
@@ -636,7 +636,7 @@ class InstallerMain:
         pkg = None
         if self.osins.needs_firmware:
             os.makedirs("vendorfw", exist_ok=True)
-            pkg = unbound_firmware.core.FWPackage("vendorfw")
+            pkg = bande_firmware.core.FWPackage("vendorfw")
             self.ins.collect_firmware(pkg)
             pkg.close()
             self.osins.firmware_package = pkg
@@ -1017,7 +1017,7 @@ class InstallerMain:
         self.expert = False
         if os.environ.get("EXPERT", None):
             p_message("By default, this installer will hide certain advanced options that")
-            p_message("are only useful for Unbound Linux developers. You can enable expert mode")
+            p_message("are only useful for Bande Linux developers. You can enable expert mode")
             p_message("to show them. Do not enable this unless you know what you are doing.")
             p_message("Please do not file bugs if things go wrong in expert mode.")
             self.expert = self.yesno("Enable expert mode?")

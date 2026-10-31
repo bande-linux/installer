@@ -16,7 +16,7 @@ LIBFFI_TARGET_OS="macOS 26"
 LIBFFI_PKG="libffi-$LIBFFI_VER-macos.tar.gz"
 
 UNBOOT="$PWD/unboot"
-AFW="$PWD/unbound_firmware"
+AFW="$PWD/bande_firmware"
 SRC="$PWD/src"
 DL="$PWD/dl"
 PACKAGE="$PWD/package"
@@ -99,7 +99,7 @@ fi
 echo "Copying files..."
 
 cp -r "$SRC"/* "$PACKAGE/"
-rm "$PACKAGE/unbound_firmware"
+rm "$PACKAGE/bande_firmware"
 cp -r "$AFW" "$PACKAGE/"
 cp "$LOGO" "$PACKAGE/logo.icns"
 mkdir -p "$PACKAGE/boot"

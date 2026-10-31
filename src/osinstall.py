@@ -115,7 +115,7 @@ class OSInstaller(PackageInstaller):
         logging.info("OSInstaller.download_extras()")
 
         mountpoint = self.dutil.mount(self.efi_part.name)
-        dest = os.path.join(mountpoint, "unbound", "extras")
+        dest = os.path.join(mountpoint, "bande", "extras")
         os.makedirs(dest, exist_ok=True)
 
         count = len(self.template["extras"])
@@ -176,7 +176,7 @@ class OSInstaller(PackageInstaller):
                 shutil.copytree(self.firmware_package.path, base)
             if part.get("copy_installer_data", False):
                 mountpoint = self.dutil.mount(info.name)
-                data_path = os.path.join(mountpoint, "unbound")
+                data_path = os.path.join(mountpoint, "bande")
                 os.makedirs(data_path, exist_ok=True)
                 self.idata_targets.append(data_path)
                 if self.setup:
@@ -196,7 +196,7 @@ class OSInstaller(PackageInstaller):
 
         unboot_vars = []
         if self.efi_part:
-            unboot_vars.append(f"chosen.unbound,efi-system-partition={self.efi_part.uuid.lower()}")
+            unboot_vars.append(f"chosen.bande,efi-system-partition={self.efi_part.uuid.lower()}")
         if next_object is not None:
             assert self.efi_part is not None
             unboot_vars.append(f"chainload={self.efi_part.uuid.lower()};{next_object}")

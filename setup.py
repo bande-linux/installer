@@ -2,12 +2,12 @@
 
 from distutils.core import setup
 
-setup(name='unbound_firmware',
+setup(name='bande_firmware',
       version='0.1',
-      description='Unbound Linux firmware tools',
-      author='Unbound Linux contributors',
+      description='Bande Linux firmware tools',
+      author='Bande Linux contributors',
 
-      url='https://github.com/unbound-linux/installer/',
-      packages=['unbound_firmware'],
-      entry_points={"console_scripts": ["unbound-fwextract = unbound_firmware.update:main"]}
+      url='https://github.com/bande-linux/installer/',
+      packages=['bande_firmware'],
+      entry_points={"console_scripts": ["bande-fwextract = bande_firmware.update:main"]}
      )

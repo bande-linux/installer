@@ -10,8 +10,8 @@ else:
 COMPRESSION_LZFSE = 0x801
 CHUNK_SIZE = 0x10000
 
-DISTRO = os.environ.get("DISTRO", "Unbound Linux")
-DISTRO_DOCS = os.environ.get("DISTRO_DOCS", "https://github.com/unbound-linux/installer")
+DISTRO = os.environ.get("DISTRO", "Bande Linux")
+DISTRO_DOCS = os.environ.get("DISTRO_DOCS", "https://github.com/bande-linux/installer")
 
 def ssize(v):
     suffixes = ["B", "KB", "MB", "GB", "TB"]

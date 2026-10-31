@@ -7,7 +7,7 @@ if true; then
 
     if [ ! -e /System ]; then
         echo "You appear to be running this script from Linux or another non-macOS system."
-        echo "Unbound Linux can only be installed from macOS (or recoveryOS)."
+        echo "Bande Linux can only be installed from macOS (or recoveryOS)."
         exit 1
     fi
 
@@ -17,7 +17,7 @@ if true; then
 
     if ! curl --no-progress-meter file:/// >/dev/null 2>&1; then
         echo "Your version of cURL is too old. This usually means your macOS is very out"
-        echo "of date. Installing Unbound Linux requires at least macOS version 13.5."
+        echo "of date. Installing Bande Linux requires at least macOS version 13.5."
         exit 1
     fi
 
@@ -29,7 +29,7 @@ if true; then
     export EXPERT=1
 
     #TMP="$(mktemp -d)"
-    TMP=/tmp/unbound-install
+    TMP=/tmp/bande-install
 
     echo
     echo "Bootstrapping installer:"

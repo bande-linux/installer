@@ -13,14 +13,14 @@ fi
 
 make -C "unboot" RELEASE=1 CHAINLOADING=1 -j4
 
-sudo rm -rf /tmp/unbound-install
-mkdir -p /tmp/unbound-install
+sudo rm -rf /tmp/bande-install
+mkdir -p /tmp/bande-install
 
-git describe --tags --always --dirty > /tmp/unbound-install/version.tag
+git describe --tags --always --dirty > /tmp/bande-install/version.tag
 
-cd /tmp/unbound-install
+cd /tmp/bande-install
 ln -sf "$base/src"/* .
-ln -sf "$base/unbound_firmware" .
+ln -sf "$base/bande_firmware" .
 mkdir -p boot
 ln -sf "$base/unboot/build/unboot.bin" boot/unboot.bin
 ln -sf "$base/logo.icns" logo.icns
