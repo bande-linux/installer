@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted, bande]
+    runs-on: ubuntu-24.04-arm
     outputs:
       installer_ver: ${{ steps.compile.outputs.installer_ver }}
 
