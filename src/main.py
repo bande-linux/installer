@@ -593,7 +593,7 @@ class InstallerMain:
 
         esp_id = None
         for var in vars:
-            k, v = var.split('=')
+            k, v = var.split('=', 1)
             if k == "chosen.bande,efi-system-partition":
                 esp_id = v
                 break
@@ -627,6 +627,7 @@ class InstallerMain:
         logging.info(f"Firmware -> {base}")
         shutil.copytree(fw_pkg.path, base, dirs_exist_ok=True)
         bande_dir = os.path.join(mountpoint, "bande")
+        os.makedirs(bande_dir, exist_ok=True)
         all_fw = "all_firmware.tar.gz"
         shutil.copy(all_fw, os.path.join(bande_dir, all_fw))
 
