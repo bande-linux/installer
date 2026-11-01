@@ -18,13 +18,12 @@ offline.
 
 ## Bootstrapping
 The installer is started by [scripts/bootstrap.sh](scripts/bootstrap.sh), which
-downloads and unpacks the installer tree. The variables at its top configure it:
+downloads and unpacks the installer tree. The variables it exports configure it
+(they point at `http://localhost:5000` for local testing):
 
 * `VERSION_FLAG`: a URI pointing to the `latest` file within the installer tree
 * `INSTALLER_BASE`: a URL pointing to the installer tree
 * `INSTALLER_DATA`: a URI pointing to the installer metadata file
-* `INSTALLER_DATA_ALT`: optionally, an alternative location for the metadata
-  file, for networks that block the primary one
 * `REPO_BASE`: a URI pointing to the OS images root; OS packages given as
   relative paths in the metadata file are fetched from its `os/` folder
 

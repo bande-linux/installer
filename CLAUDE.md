@@ -1,7 +1,6 @@
 # bande-linux installer
 
-the source of truth; keep it current. Open work goes to
-[NOTES/backlog.md](NOTES/backlog.md).
+The source of truth; keep it current.
 
 The rules below override your defaults. Follow them unless I say otherwise in the session.
 
@@ -74,8 +73,8 @@ you added that fails §3. Expect that to be most of them.
   - add a dependency (Python package, bundled tool)
   - run anything as root, or anything that touches disks, partitions or the boot policy of a real
     Mac, including `test.sh`
-- Commit in small commits of one intent on a branch and push it. A branch reaches main only with
-  green CI, never by a force-push.
+- Commit in small commits of one intent on a branch and push it. A branch reaches main once it is
+  verified, never by a force-push. CI runs only on `v*` tags.
 
 ## 6. Architecture
 
