@@ -31,7 +31,7 @@ mkdir -p "$PACKAGE/bin"
 
 echo "Determining version..."
 
-[ -d .git ] && VER=$(git describe --always --dirty --tags)
+[ -e .git ] && VER=$(git describe --always --dirty --tags)
 
 if [ -z "$VER" ]; then
     if [ -e version.tag ]; then
