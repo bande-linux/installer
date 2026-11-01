@@ -25,8 +25,8 @@ downloads and unpacks the installer tree. The variables at its top configure it:
 * `INSTALLER_DATA`: a URI pointing to the installer metadata file
 * `INSTALLER_DATA_ALT`: optionally, an alternative location for the metadata
   file, for networks that block the primary one
-* `REPO_BASE`: a URI pointing to the OS images root, the parent folder of the
-  relative paths in the metadata file
+* `REPO_BASE`: a URI pointing to the OS images root; OS packages given as
+  relative paths in the metadata file are fetched from its `os/` folder
 
 ## First-boot setup
 An OS entry in the metadata file with `"setup": true` makes the installer ask for
