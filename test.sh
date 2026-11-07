@@ -25,5 +25,6 @@ mkdir -p boot
 ln -sf "$base/unboot/build/unboot.bin" boot/unboot.bin
 ln -sf "$base/logo.icns" logo.icns
 ln -sf "$base/data/installer_data.json" installer_data.json
+ln -sf "$base/data/installer_data.json.sig" installer_data.json.sig
 
 sudo -E python3 main.py

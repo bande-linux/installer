@@ -3,7 +3,7 @@
 import os, os.path, re, shlex, subprocess, sys, time, termios, json, getpass
 from dataclasses import dataclass
 
-import system, osenum, stub, diskutil, osinstall, bande_firmware, unboot, bugs
+import system, osenum, stub, diskutil, osinstall, bande_firmware, unboot, bugs, signature
 from util import *
 
 PART_ALIGN = psize("1MiB")
@@ -125,10 +125,25 @@ IPSW_VERSIONS = [
          "https://updates.cdn-apple.com/2025FallFCS/patches/089-71124/49AD260A-D47F-4B5E-A793-30446187196E/com_apple_MobileAsset_MacSoftwareUpdate/f6d1ac9149f6a06401ff87fae5b262c420bfc5f7.zip"),
 ]
 
+def signed_installer_data():
+    try:
+        with open("installer_data.json", "rb") as fd:
+            data = fd.read()
+        with open("installer_data.json.sig", "rb") as fd:
+            sig = fd.read()
+        with open("archive-key.asc") as fd:
+            key = fd.read()
+        signature.verify(data, sig, key)
+    except (OSError, signature.BadSignature) as e:
+        logging.error(f"Installer data rejected: {e}")
+        p_error("The installer data is not signed by Bande.")
+        sys.exit(1)
+    return json.loads(data)
+
 class InstallerMain:
     def __init__(self, version):
         self.version = version
-        self.data = json.load(open("installer_data.json"))
+        self.data = signed_installer_data()
         self.credentials_validated = False
         self.expert = False
         self.ipsw = None
@@ -1206,6 +1221,9 @@ if __name__ == "__main__":
         print()
         logging.info("KeyboardInterrupt")
         p_error("Interrupted")
+    except DamagedPackage as e:
+        logging.error(f"Damaged package file: {e}")
+        p_error("The downloaded system is damaged. Run the installer again.")
     except subprocess.CalledProcessError as e:
         cmd = shlex.join(e.cmd)
         p_error(f"Failed to run process: {cmd}")

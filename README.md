@@ -27,6 +27,14 @@ downloads and unpacks the installer tree. The variables it exports configure it
 * `REPO_BASE`: a URI pointing to the OS images root; OS packages given as
   relative paths in the metadata file are fetched from its `os/` folder
 
+## Verification
+The installer accepts the metadata file only with a detached OpenPGP signature beside it
+(`installer_data.json.sig`) made by a signing subkey of the Bande archive key, which it carries as
+`archive-key.asc`, the same key APT trusts. The metadata lists the SHA-256 of every file in the
+OS package, and each file is checked as it is written, so a changed or truncated download stops
+the install before the Mac is made to boot it. Python's own Ed25519 check in `signature.py` does
+this, because macOS has no gpg.
+
 ## First start
 The installer asks for no account, password or Wi-Fi network. The OS's first-run assistant asks for
 them on the first start, and nothing secret is written to the EFI system partition. A partition

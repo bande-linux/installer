@@ -174,10 +174,18 @@ class PBZX:
         self.p += len(d)
         return d
 
+class DamagedPackage(Exception):
+    pass
+
 class PackageInstaller:
     def __init__(self):
         self.verbose = "-v" in sys.argv
         self.printed_progress = False
+        self.digests = None
+
+    def check_digest(self, name, digest):
+        if self.digests is not None and self.digests.get(name) != digest:
+            raise DamagedPackage(name)
 
     def path(self, path):
         return path
@@ -198,6 +206,7 @@ class PackageInstaller:
 
     def fdcopy(self, sfd, dfd, size=None):
         BLOCK = 16 * 1024 * 1024
+        digest = hashlib.sha256()
         copied = 0
         bps = 0
         st = time.time()
@@ -213,6 +222,7 @@ class PackageInstaller:
             if not d:
                 break
             dfd.write(d)
+            digest.update(d)
             copied += len(d)
             if self.ucache:
                 bps = self.ucache.bytes_read / (time.time() - st)
@@ -220,6 +230,7 @@ class PackageInstaller:
         if size is not None:
             sys.stdout.write("\033[3G100.00% ")
             sys.stdout.flush()
+        return digest.hexdigest()
 
     def copy_recompress(self, src, path):
         # For BXDIFF50 stuff in OTA images
@@ -317,7 +328,7 @@ class PackageInstaller:
             with self.pkg.open(src) as sfd, \
                 open(dest, "wb") as dfd:
                 logging.info(f"  {src} -> {dest}")
-                self.fdcopy(sfd, dfd, info.file_size)
+                self.check_digest(src, self.fdcopy(sfd, dfd, info.file_size))
         except KeyError:
             if not optional:
                 raise

@@ -52,6 +52,7 @@ if true; then
 
     curl --no-progress-meter -L -o "$PKG" "$INSTALLER_BASE/$PKG"
     curl --no-progress-meter -L -O "$INSTALLER_DATA"
+    curl --no-progress-meter -L -O "$INSTALLER_DATA.sig"
 
     echo "  Extracting..."
 

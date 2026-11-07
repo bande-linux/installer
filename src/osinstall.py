@@ -17,6 +17,7 @@ class OSInstaller(PackageInstaller):
         self.efi_part = None
         self.idata_targets = []
         self.install_size = self.min_size
+        self.digests = template["sha256"]
 
     @property
     def default_os_name(self):
@@ -159,7 +160,7 @@ class OSInstaller(PackageInstaller):
                     raise Exception("The size of the rootfs image file must be a multiple of 4KiB.")
                 with self.pkg.open(image) as sfd, \
                     open(f"/dev/r{info.name}", "r+b") as dfd:
-                    self.fdcopy(sfd, dfd, zinfo.file_size)
+                    self.check_digest(image, self.fdcopy(sfd, dfd, zinfo.file_size))
                 self.flush_progress()
                 if part.get("recovery"):
                     self.write_recovery_entry(info.uuid.lower())
