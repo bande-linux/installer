@@ -7,8 +7,6 @@ import system, osenum, stub, diskutil, osinstall, bande_firmware, unboot, bugs
 from util import *
 
 PART_ALIGN = psize("1MiB")
-USERNAME_RE = r"[a-z_][a-z0-9_-]{0,31}"
-SSH_KEY_TYPE_RE = r"(ssh-|ecdsa-|sk-)"
 
 STUB_SIZE = align_down(psize("2.5GB"), PART_ALIGN)
 
@@ -395,94 +393,12 @@ class InstallerMain:
             os_size -= STUB_SIZE
 
         print()
-        self.flush_input()
-        p_question("Enter a name for your OS")
-        label = input_prompt(f"OS name ({self.osins.name}): ") or self.osins.name
-        self.osins.name = label
-        logging.info(f"New OS name: {label}")
-        print()
-
-        if template.get("setup", False):
-            if not any(p.get("copy_installer_data", False) for p in template["partitions"]):
-                raise Exception("An OS with setup needs a partition with copy_installer_data")
-            self.osins.setup = self.get_setup()
 
         ipsw = self.choose_ipsw(template.get("supported_fw", None))
         logging.info(f"Chosen IPSW version: {ipsw.version}")
         self.ins = stub.StubInstaller(self.sysinfo, self.dutil, self.osinfo)
         self.ins.load_ipsw(ipsw)
         return os_size
-
-    def get_setup(self):
-        login = os.environ.get("SUDO_USER") or getpass.getuser()
-        default_user = login if login != "root" and re.fullmatch(USERNAME_RE, login) else None
-
-        p_question("Create the user account for the new OS")
-        while True:
-            self.flush_input()
-            user = input_prompt(f"Username ({default_user}): " if default_user else "Username: ").strip()
-            user = user or default_user
-            if user == "root":
-                p_error("root is reserved.")
-            elif user and re.fullmatch(USERNAME_RE, user):
-                break
-            else:
-                p_error("Use lowercase letters, digits, '-' and '_'.")
-        while True:
-            self.flush_input()
-            password = getpass.getpass("Password: ")
-            if not password:
-                continue
-            if getpass.getpass("Repeat password: ") == password:
-                break
-            p_error("The passwords do not match.")
-        print()
-
-        p_question("Enter the Wi-Fi network for the new OS")
-        while True:
-            self.flush_input()
-            ssid = input_prompt("Network name (none): ")
-            if len(ssid.encode("utf-8")) <= 32:
-                break
-            p_error("A network name has at most 32 bytes.")
-        psk = ""
-        while ssid:
-            self.flush_input()
-            psk = getpass.getpass("Wi-Fi password (none): ")
-            if not psk or re.fullmatch(r"[ -~]{8,63}|[0-9a-fA-F]{64}", psk):
-                break
-            p_error("A Wi-Fi password has 8 to 63 ASCII characters.")
-        print()
-
-        p_question("Enter an SSH public key or the path to one")
-        default_key = os.path.expanduser(f"~{login}/.ssh/id_ed25519.pub")
-        if not os.path.exists(default_key):
-            default_key = None
-        while True:
-            self.flush_input()
-            key = input_prompt(f"SSH key ({default_key or 'none'}): ").strip() or default_key
-            if key == "none":
-                key = None
-            if key and not re.match(SSH_KEY_TYPE_RE, key):
-                try:
-                    with open(os.path.expanduser(key)) as fd:
-                        key = fd.read().strip()
-                except OSError:
-                    p_error("Cannot read that file.")
-                    continue
-            if not key or re.fullmatch(SSH_KEY_TYPE_RE + r"\S+ \S+( .*)?", key):
-                break
-            p_error("Not an SSH public key.")
-        print()
-
-        logging.info(f"Setup: user {user}, Wi-Fi {ssid!r}, SSH key {'set' if key else 'none'}")
-        return {
-            "user": user,
-            "password": password,
-            "wifi-ssid": ssid,
-            "wifi-psk": psk,
-            "authorized_keys": key + "\n" if key else "",
-        }
 
     def action_repair_or_upgrade(self, oses, upgrade):
         choices = {str(i): f"{p.desc}\n      {str(o)}" for i, (p, o) in enumerate(oses)}

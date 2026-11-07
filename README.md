@@ -27,14 +27,12 @@ downloads and unpacks the installer tree. The variables it exports configure it
 * `REPO_BASE`: a URI pointing to the OS images root; OS packages given as
   relative paths in the metadata file are fetched from its `os/` folder
 
-## First-boot setup
-An OS entry in the metadata file with `"setup": true` makes the installer ask for
-a username and password, a Wi-Fi network and an SSH public key. They are written
-as plain files into `bande/setup/` on the OS's EFI system partition (`user`,
-`password`, `wifi-ssid`, `wifi-psk`, `authorized_keys`), next to the installer
-data, so the partition needs `"copy_installer_data": true`. The installed OS
-applies them on its first boot and deletes them. Until then they are readable by
-anyone who can mount that partition.
+## First start
+The installer asks for no account, password or Wi-Fi network. The OS's first-run assistant asks for
+them on the first start, and nothing secret is written to the EFI system partition. A partition
+with `"recovery": true` receives the recovery image, and the installer writes its partition UUID
+into `loader/entries/recovery.conf` on the EFI system partition, replacing `@RECOVERY_PARTUUID@`.
+The EFI partition must come first in the metadata file.
 
 ## License
 The Bande Linux installer is distributed under the MIT license. See LICENSE for the
